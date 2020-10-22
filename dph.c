@@ -105,16 +105,27 @@ void *philo(void *param){
 
 int main()
 {
-	//signal(SIGINT,func);	
-	pthread_t tid[NUM_THREADS];/*The thread identifier*/
-    pthread_attr_t attr[NUM_THREADS];/*Set of thread attributes*/
-    
-    for (int i = 0; i < NUM_THREADS; i++) 
+    pthread_cond_t self[PHILOSOPHER_NUMBERS];// Behalf on each philosophers
+    pthread_mutex_t mutex[PHILOSOPHER_NUMBERS]; // For conditional variables
+    //使用条件变量来使得哲学家们在还不满足吃饭条件的时候进行等待，
+    //并给每一个哲学家的条件变量配上一把互斥锁。
+
+    //signal(SIGINT,func);
+    pthread_t tid[PHILOSOPHER_NUMBERS];// For pthread_create()
+    int id[PHILOSOPHER_NUMBERS];// For philo function
+    pthread_attr_t attr[PHILOSOPHER_NUMBERS];/*Set of thread attributes*/
+    //定义五个线程的id，以及给线程函数传递的线程索引数组
+
+    for (int i = 0; i < PHILOSOPHER_NUMBERS; i++) 
+        pthread_cond_init(&self[i],NULL);
+    for (int i = 0; i < PHILOSOPHER_NUMBERS; i++) 
+        pthread_mutex_init(&mutex[i],NULL);        
+    for (int i = 0; i < PHILOSOPHER_NUMBERS; i++) 
     {
          pthread_attr_init(&attr[i]);
-         pthread_create(&tid[i],&attr[i],consumer,&lambda_c);    
+         pthread_create(&tid[i],&attr[i],philo,&id[i]);    
     }
-    for (int i = 0; i < NUM_THREADS; i++) 
+    for (int i = 0; i < PHILOSOPHER_NUMBERS; i++) 
         pthread_join(tid[i],NULL);
     //创建三个线程
 	return 0;
