@@ -106,8 +106,16 @@ void *philo(void *param){
 int main()
 {
 	//signal(SIGINT,func);	
-	int i;
-	for (i = 0; i < PHILOSOPHER_NUMBERS; i++)
-		pthread_join(tid[i],NULL);
+	pthread_t tid[NUM_THREADS];/*The thread identifier*/
+    pthread_attr_t attr[NUM_THREADS];/*Set of thread attributes*/
+    
+    for (int i = 0; i < NUM_THREADS; i++) 
+    {
+         pthread_attr_init(&attr[i]);
+         pthread_create(&tid[i],&attr[i],consumer,&lambda_c);    
+    }
+    for (int i = 0; i < NUM_THREADS; i++) 
+        pthread_join(tid[i],NULL);
+    //创建三个线程
 	return 0;
 }
